@@ -8,62 +8,62 @@ public class Item {
 	private String name;
 	private String description;
 	private int price;
+	private int stock;
 	
+	// Constructors
 	public Item() {
 		super();
-		id = -1;
 	}
-
 	public Item(String name, String description, int price) {
-		this();
+		super();
 		setName(name);
 		setDescription(description);
 		setPrice(price);
 	}
-	
 	public Item(Item other) {
 		super();
 		setId(other.id);
 		setName(other.name);
 		setDescription(other.description);
 		setPrice(other.price);
+		setStock(other.stock);
 	}
 
+	// Setters and Getters
 	public int getId() {
 		return id;
 	}
-
 	public void setId(int id) {
 		this.id = Math.max(0, id);
 	}
-
 	public String getName() {
 		return name;
 	}
-
 	public void setName(String name) {
 		this.name = name;
 	}
-
 	public String getDescription() {
 		return description;
 	}
-
 	public void setDescription(String description) {
 		this.description = description;
 	}
-
 	public int getPrice() {
 		return price;
 	}
-
 	public void setPrice(int price) {
 		this.price = Math.max(0, price);
+	}
+	public int getStock() {
+		return stock;
+	}
+	public void setStock(int stock) {
+		this.stock = Math.max(0, stock);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(description, id, name, price);
+		return Objects.hash(description, id, name, price, stock);
 	}
 
 	@Override
@@ -76,11 +76,11 @@ public class Item {
 			return false;
 		Item other = (Item) obj;
 		return Objects.equals(description, other.description) && id == other.id && Objects.equals(name, other.name)
-				&& price == other.price;
+				&& price == other.price && stock == other.stock;
 	}
 
 	@Override
 	public String toString() {
-		return "Item [id=" + id + ", name=" + name + ", description=" + description + ", price=" + price + "]";
+		return "Item [id=" + id + ", name=" + name + ", description=" + description + ", price=" + price + ", stock=" + stock + "]";
 	}
 }

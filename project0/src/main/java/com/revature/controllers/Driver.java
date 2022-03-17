@@ -6,8 +6,7 @@ public class Driver {
 	
 	public static void main(String[] args) {
 		
-		Javalin app = Javalin.create( (config) -> {} );
-		app.start();
+		Javalin app = Javalin.create().start();
 		
 		
 	}
