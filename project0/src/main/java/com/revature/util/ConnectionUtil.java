@@ -12,10 +12,10 @@ public class ConnectionUtil {
 	// Reuse this connection instead of creating more connections to the database
 	private static Connection con;
 	
+	public static boolean defaultGetConnectionFromFile = true;
 	// Default method for establishing connection
-	public static Connection getConnection() throws SQLException {
-		return getConnectionFromEnv();
-		//return getConnectionFromFile();
+	public static Connection getConnection() throws SQLException, IOException {
+		return (defaultGetConnectionFromFile) ? getConnectionFromFile() : getConnectionFromEnv();
 	}
 	
 	// Ugly and gross; don't use
@@ -32,15 +32,17 @@ public class ConnectionUtil {
 	
 	// Remember to .gitignore the .properties file to prevent credential leak when pushing
 	public static Connection getConnectionFromFile() throws IOException, SQLException {
-		Properties prop = new Properties();
-		ClassLoader loader = Thread.currentThread().getContextClassLoader();
-		prop.load(loader.getResourceAsStream("creds.properties"));
-		
-		String url = prop.getProperty("url");
-		String username = prop.getProperty("username");
-		String password = prop.getProperty("password");
 		
 		if (con == null || con.isClosed()) {
+			
+			Properties prop = new Properties();
+			ClassLoader loader = Thread.currentThread().getContextClassLoader();
+			prop.load(loader.getResourceAsStream("creds.properties"));
+			
+			String url = prop.getProperty("url");
+			String username = prop.getProperty("username");
+			String password = prop.getProperty("password");
+			
 			con = DriverManager.getConnection(url, username, password);			
 		}
 		return con;
@@ -48,19 +50,20 @@ public class ConnectionUtil {
 	
 	// Preferred way, requires editing value in Windows
 	public static Connection getConnectionFromEnv() throws SQLException {
-		/*
-		 * Search for Edit System Environment Variables
-		 * 		- click on Environment Variables
-		 * 		- under System Variables, click New
-		 * 		- enter a variable name and its value
-		 * 			- i.e.: "DB_URL" : "localhost:5432"
-		 * 		- press OK
-		 */
-		String url = System.getenv("DB_URL");
-		String username = System.getenv("DB_USER");
-		String password = System.getenv("DB_PASS");
 		
 		if (con == null || con.isClosed()) {
+			/*
+			 * Search for Edit System Environment Variables
+			 * 		- click on Environment Variables
+			 * 		- under System Variables, click New
+			 * 		- enter a variable name and its value
+			 * 			- i.e.: "DB_URL" : "localhost:5432"
+			 * 		- press OK
+			 */
+			String url = System.getenv("DB_URL");
+			String username = System.getenv("DB_USER");
+			String password = System.getenv("DB_PASS");
+			
 			con = DriverManager.getConnection(url, username, password);			
 		}
 		return con;

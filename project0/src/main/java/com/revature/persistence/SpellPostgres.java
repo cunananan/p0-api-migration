@@ -14,21 +14,19 @@ import com.revature.util.ConnectionUtil;
 
 public class SpellPostgres implements SpellDao {
 	
-	private static boolean getConnectionFromFile = true;
-	
 	@Override
 	public List<Spell> getSpells() {
 		List<Spell> spells = new ArrayList<>();
-		String sql = "select * from Spells;";
+		String sql = "SELECT * FROM spells;";
 		
-		try (Connection c = getConnection()) {
+		try (Connection c = ConnectionUtil.getConnection()) {
 			PreparedStatement ps = c.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
 				spells.add(createSpellFromRecord(rs));
 			}
-		} catch (SQLException e) {
+		} catch (SQLException | IOException e) {
 			// TODO Proper Handling
 			e.printStackTrace();
 		}
@@ -38,9 +36,9 @@ public class SpellPostgres implements SpellDao {
 	@Override
 	public Spell getSpell(int id) {
 		Spell spell = null;
-		String sql = "select * from Spells where id = ?;";
+		String sql = "SELECT * FROM spells WHERE id = ?;";
 		
-		try (Connection c = getConnection()) {
+		try (Connection c = ConnectionUtil.getConnection()) {
 			PreparedStatement ps = c.prepareStatement(sql);
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
@@ -48,7 +46,7 @@ public class SpellPostgres implements SpellDao {
 			if (rs.next()) {
 				spell = createSpellFromRecord(rs);
 			}
-		} catch (SQLException e) {
+		} catch (SQLException | IOException e) {
 			// TODO Proper handling
 			e.printStackTrace();
 		}
@@ -58,30 +56,20 @@ public class SpellPostgres implements SpellDao {
 	@Override
 	public int addSpell(Spell spell) {
 		int genId = -1;
-		String sql = "insert into Spells (name, description, price, stock, type_id, cast_fp_cost, "
+		String sql = "INSERT INTO spells (name, description, price, stock, type_id, cast_fp_cost, "
 		             + "charge_fp_cost, slots_used, int_requirement, fai_requirement, arc_requirement) "
-		             + "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) returning id;";
+		             + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;";
 		             //         n  d  p  s  ti if hf su ir fr ar
 		
-		try (Connection c = getConnection()) {
+		try (Connection c = ConnectionUtil.getConnection()) {
 			PreparedStatement ps = c.prepareStatement(sql);
-			ps.setString(1, spell.getName());
-			ps.setString(2, spell.getDescription());
-			ps.setInt(3, spell.getPrice());
-			ps.setInt(4, spell.getStock());
-			ps.setInt(5, spell.getType().ordinal());
-			ps.setInt(6, spell.getFpCost().cast);
-			ps.setInt(7, spell.getFpCost().charge);
-			ps.setInt(8, spell.getSlotsUsed());
-			ps.setInt(9, spell.getStatRequirement().intelligence);
-			ps.setInt(10, spell.getStatRequirement().faith);
-			ps.setInt(11, spell.getStatRequirement().arcane);
+			prepareStatementWithSpellFields(ps, spell, 1);
 			ResultSet rs = ps.executeQuery();
 			
 			if (rs.next()) {
 				genId = rs.getInt("id");
 			}
-		} catch (SQLException e) {
+		} catch (SQLException | IOException e) {
 			// TODO Proper handling
 			e.printStackTrace();
 		}
@@ -90,15 +78,17 @@ public class SpellPostgres implements SpellDao {
 
 	@Override
 	public boolean deleteSpell(int id) {
-		String sql = "delete from Spells where id = ?;";
+		String sql = "DELETE FROM spells WHERE id = ? RETURNING *;";
 		
-		try (Connection c = getConnection()) {
+		try (Connection c = ConnectionUtil.getConnection()) {
 			PreparedStatement ps = c.prepareStatement(sql);
 			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
 			
-			// TODO check that operation was successful
-		} catch (SQLException e) {
+			if (rs.next()) {
+				return true;
+			}
+		} catch (SQLException | IOException e) {
 			// TODO Proper handling
 			e.printStackTrace();
 		}
@@ -107,7 +97,23 @@ public class SpellPostgres implements SpellDao {
 
 	@Override
 	public boolean updateSpell(Spell spell) {
-		// TODO Auto-generated method stub
+		String sql = "UPDATE spells SET name = ?, description = ?, price = ?, stock = ?, type_id = ?, "
+		             + "cast_fp_cost = ?, charge_fp_cost = ?, slots_used = ?, int_requirement = ?, "
+		             + "fai_requirement = ?, arc_requirement = ? WHERE id = ? RETURNING *;";
+		
+		try (Connection c = ConnectionUtil.getConnection()) {
+			PreparedStatement ps = c.prepareStatement(sql);
+			prepareStatementWithSpellFields(ps, spell, 1);
+			ps.setInt(12, spell.getId());
+			ResultSet rs = ps.executeQuery();
+			
+			if (rs.next()) {
+				return true;
+			}
+		} catch (SQLException | IOException e) {
+			// TODO Proper handling
+			e.printStackTrace();
+		}
 		return false;
 	}
 	
@@ -127,15 +133,19 @@ public class SpellPostgres implements SpellDao {
 		return s;
 	}
 	
-	private Connection getConnection() throws SQLException {
-		if (getConnectionFromFile) {
-			try (Connection c = ConnectionUtil.getConnectionFromFile()) {
-				return c;
-			} catch (IOException e) {
-				// TODO Proper handling
-				e.printStackTrace();
-			}
-		}
-		return ConnectionUtil.getConnectionFromEnv();
+	private void prepareStatementWithSpellFields(PreparedStatement ps, Spell spell, int startIdx)
+			throws SQLException
+	{
+		ps.setString(startIdx, spell.getName());
+		ps.setString(startIdx+1, spell.getDescription());
+		ps.setInt(startIdx+2, spell.getPrice());
+		ps.setInt(startIdx+3, spell.getStock());
+		ps.setInt(startIdx+4, spell.getType().ordinal());
+		ps.setInt(startIdx+5, spell.getFpCost().cast);
+		ps.setInt(startIdx+6, spell.getFpCost().charge);
+		ps.setInt(startIdx+7, spell.getSlotsUsed());
+		ps.setInt(startIdx+8, spell.getStatRequirement().intelligence);
+		ps.setInt(startIdx+9, spell.getStatRequirement().faith);
+		ps.setInt(startIdx+10, spell.getStatRequirement().arcane);
 	}
 }

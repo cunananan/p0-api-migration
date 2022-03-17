@@ -8,6 +8,8 @@ public class Driver {
 		
 		Javalin app = Javalin.create().start();
 		
-		
+		app.get("spells", (ctx) -> {
+			
+		});
 	}
 }
