@@ -54,7 +54,31 @@ public class SpellPostgres implements SpellDao {
 	}
 
 	@Override
-	public int addSpell(Spell spell) {
+	public int insertSpell(Spell spell) {
+		int id = -1;
+		String sql = "INSERT INTO spells (id, name, description, price, stock, type_id, cast_fp_cost, "
+                     + "charge_fp_cost, slots_used, int_requirement, fai_requirement, arc_requirement) "
+                     + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id;";
+		             //         i  n  d  p  s  ti if hf su ir fr ar
+		
+		try (Connection c = ConnectionUtil.getConnection()) {
+			PreparedStatement ps = c.prepareStatement(sql);
+			ps.setInt(1, spell.getId());
+			prepareStatementWithSpellFields(ps, spell, 2);
+			ResultSet rs = ps.executeQuery();
+			
+			if (rs.next()) {
+				id = rs.getInt("id");
+			}
+		} catch (SQLException | IOException e) {
+			// TODO Proper handling
+			e.printStackTrace();
+		}
+		return id;
+	}
+
+	@Override
+	public int appendSpell(Spell spell) {
 		int genId = -1;
 		String sql = "INSERT INTO spells (name, description, price, stock, type_id, cast_fp_cost, "
 		             + "charge_fp_cost, slots_used, int_requirement, fai_requirement, arc_requirement) "

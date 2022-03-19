@@ -11,8 +11,10 @@ public interface SpellDao {
 	public List<Spell> getSpells();
 	// Gets spell of id from collection; returns null otherwise
 	public Spell getSpell(int id);
-	// Adds spell to collection; returns id of spell if successful, else returns -1
-	public int addSpell(Spell spell);
+	// Adds spell the index of its id; returns id of spell if successful, else returns -1
+	public int insertSpell(Spell spell);
+	// Adds spell to end of collection; returns id of spell if successful, else returns -1
+	public int appendSpell(Spell spell);
 	// Deletes spell of id; returns true iff successful
 	public boolean deleteSpell(int id);
 	// Updates spell given; returns true iff successful

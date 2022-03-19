@@ -95,6 +95,13 @@ public class Spell extends Item {
 		slotsUsed = 1;
 		statRequirement = new StatRequirement();
 	}
+	public Spell(int id, String name, String description, int price, int stock) {
+		super(id, name, description, price, stock);
+		type = SpellType.NOT_SET;
+		fpCost = new FpCost();
+		slotsUsed = 1;
+		statRequirement = new StatRequirement();
+	}
 	public Spell(Spell other) {
 		super(other);
 		type = other.type;

@@ -25,7 +25,7 @@ public class TestSpellPostgres {
 		// Test addSpell(spell)
 		Spell newSpell = new Spell("test", "garbage", 1000);
 		System.out.println("Adding new spell: ");
-		newSpell.setId(sd.addSpell(newSpell));
+		newSpell.setId(sd.appendSpell(newSpell));
 		System.out.println(sd.getSpell(newSpell.getId()));
 		System.out.println();
 		

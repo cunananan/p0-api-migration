@@ -20,6 +20,11 @@ public class Item {
 		setDescription(description);
 		setPrice(price);
 	}
+	public Item(int id, String name, String description, int price, int stock) {
+		this(name, description, price);
+		setId(id);
+		setStock(stock);
+	}
 	public Item(Item other) {
 		super();
 		setId(other.id);
