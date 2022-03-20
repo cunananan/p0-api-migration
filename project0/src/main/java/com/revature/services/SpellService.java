@@ -37,6 +37,7 @@ public class SpellService {
 	}
 	
 	public int addSpell(Spell spell) throws InsertionFailureException {
+		if (spell != null) spell.verifyFields();
 		int id = sd.appendSpell(spell);
 		if (id < 0) {
 			throw new InsertionFailureException();
@@ -50,7 +51,12 @@ public class SpellService {
 		}
 	}
 	
-	public void updateSpell(Spell spell) throws ItemNotFoundException {
+	public void updateSpell(Spell spellChanges) throws ItemNotFoundException {
+		Spell spell = sd.getSpell(spellChanges.getId());
+		if (spell == null) {
+			throw new ItemNotFoundException();
+		}
+		spell.copyFrom(spellChanges);
 		if (!sd.updateSpell(spell)) {
 			throw new ItemNotFoundException();
 		}

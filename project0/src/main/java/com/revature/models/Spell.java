@@ -18,40 +18,37 @@ public class Spell extends Item {
 	public class FpCost {
 		public int cast;
 		public int charge;
-//		private int initiate;
-//		private int hold;
 		
 		public FpCost() {
 			super();
+			cast = -1;
+			charge = -1;
 		}
 		public FpCost(FpCost other) {
 			super();
 			this.cast = other.cast;
 			this.charge = other.charge;
 		}
-//		public int getInitiate() {
-//			return initiate;
-//		}
-//		public void setInitiate(int initiate) {
-//			this.initiate = initiate;
-//		}
-//		public int getHold() {
-//			return hold;
-//		}
-//		public void setHold(int hold) {
-//			this.hold = hold;
-//		}
+		public void copyFrom(FpCost other) {
+			if (other.cast > -1) cast = other.cast;
+			if (other.charge > -1) charge = other.charge;
+		}
+		@Override
+		public String toString() {
+			return "[cast=" + cast + ", charge=" + charge + "]";
+		}
+		
 	}
 	public class StatRequirement {
 		public int intelligence;
 		public int faith;
 		public int arcane;
-//		private int intelligence;
-//		private int faith;
-//		private int arcane;
 		
 		public StatRequirement() {
 			super();
+			intelligence = -1;
+			faith = -1;
+			arcane = -1;
 		}
 		public StatRequirement(StatRequirement other) {
 			super();
@@ -59,24 +56,15 @@ public class Spell extends Item {
 			this.faith = other.faith;
 			this.arcane = other.arcane;
 		}
-//		public int getIntelligence() {
-//			return intelligence;
-//		}
-//		public void setIntelligence(int intelligence) {
-//			this.intelligence = intelligence;
-//		}
-//		public int getFaith() {
-//			return faith;
-//		}
-//		public void setFaith(int faith) {
-//			this.faith = faith;
-//		}
-//		public int getArcane() {
-//			return arcane;
-//		}
-//		public void setArcane(int arcane) {
-//			this.arcane = arcane;
-//		}
+		public void copyFrom(StatRequirement other) {
+			if (other.intelligence > -1) intelligence = other.intelligence;
+			if (other.faith > -1) faith = other.faith;
+			if (other.arcane > -1) arcane = other.arcane;
+		}
+		@Override
+		public String toString() {
+			return "[intelligence=" + intelligence + ", faith=" + faith + ", arcane=" + arcane + "]";
+		}
 	}
 	
 	// Constructors
@@ -87,7 +75,7 @@ public class Spell extends Item {
 		slotsUsed = 1;
 		statRequirement = new StatRequirement();
 	}
-		// To initialize the other fields, just use the setters
+	// To initialize the other fields, just use the setters
 	public Spell(String name, String description, int price) {
 		super(name, description, price);
 		type = SpellType.NOT_SET;
@@ -122,9 +110,9 @@ public class Spell extends Item {
 	public FpCost getFpCost() {
 		return new FpCost(fpCost);
 	}
-	public void setFpCost(int castCost, int holdCost) {
+	public void setFpCost(int castCost, int chargeCost) {
 		this.fpCost.cast = Math.max(0, castCost);
-		this.fpCost.charge = Math.max(0, holdCost);
+		this.fpCost.charge = Math.max(0, chargeCost);
 	}
 	public int getSlotsUsed() {
 		return slotsUsed;
@@ -139,6 +127,21 @@ public class Spell extends Item {
 		this.statRequirement.intelligence = Math.max(0, intRequirement);
 		this.statRequirement.faith = Math.max(0, faiRequirement);
 		this.statRequirement.arcane = Math.max(0, arcRequirement);
+	}
+	@Override
+	public void verifyFields() {
+		super.verifyFields();
+		setType(type);
+		setFpCost(fpCost.cast, fpCost.charge);
+		setSlotsUsed(slotsUsed);
+		setStatRequirement(statRequirement.intelligence, statRequirement.faith, statRequirement.arcane);
+	}
+	public void copyFrom(Spell other) {
+		super.copyFrom(other);
+		if (other.type != SpellType.NOT_SET) type = other.type;
+		fpCost.copyFrom(other.fpCost);
+		if (other.slotsUsed > 0) slotsUsed = other.slotsUsed;
+		statRequirement.copyFrom(other.statRequirement);
 	}
 
 	@Override
@@ -165,4 +168,11 @@ public class Spell extends Item {
 				&& statRequirement.faith == other.statRequirement.faith
 				&& statRequirement.arcane == other.statRequirement.arcane;
 	}
+	
+	public String toStringFull() {
+		return "Spell [" + toStringPartial() + ", type=" + type + ", fpCost=" + fpCost.toString()
+				+ ", slotsUsed=" + slotsUsed + ", statRequirement=" + statRequirement.toString() + "]";
+	}
+	
+	
 }

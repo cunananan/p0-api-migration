@@ -17,7 +17,7 @@ public class SpellPostgres implements SpellDao {
 	@Override
 	public List<Spell> getSpells() {
 		List<Spell> spells = new ArrayList<>();
-		String sql = "SELECT * FROM spells;";
+		String sql = "SELECT * FROM spells ORDER BY id ASC;";
 		
 		try (Connection c = ConnectionUtil.getConnection()) {
 			PreparedStatement ps = c.prepareStatement(sql);

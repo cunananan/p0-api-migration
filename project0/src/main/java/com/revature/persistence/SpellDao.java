@@ -1,7 +1,6 @@
 package com.revature.persistence;
 
 import java.util.List;
-import com.revature.models.Item;
 import com.revature.models.Spell;
 
 
