@@ -21,23 +21,18 @@ public class Spell extends Item {
 		
 		public FpCost() {
 			super();
-			cast = -1;
-			charge = -1;
+			cast = 0;
+			charge = 0;
 		}
 		public FpCost(FpCost other) {
 			super();
 			this.cast = other.cast;
 			this.charge = other.charge;
 		}
-		public void copyFrom(FpCost other) {
-			if (other.cast > -1) cast = other.cast;
-			if (other.charge > -1) charge = other.charge;
-		}
 		@Override
 		public String toString() {
 			return "[cast=" + cast + ", charge=" + charge + "]";
 		}
-		
 	}
 	public class StatRequirement {
 		public int intelligence;
@@ -46,20 +41,15 @@ public class Spell extends Item {
 		
 		public StatRequirement() {
 			super();
-			intelligence = -1;
-			faith = -1;
-			arcane = -1;
+			intelligence = 0;
+			faith = 0;
+			arcane = 0;
 		}
 		public StatRequirement(StatRequirement other) {
 			super();
 			this.intelligence = other.intelligence;
 			this.faith = other.faith;
 			this.arcane = other.arcane;
-		}
-		public void copyFrom(StatRequirement other) {
-			if (other.intelligence > -1) intelligence = other.intelligence;
-			if (other.faith > -1) faith = other.faith;
-			if (other.arcane > -1) arcane = other.arcane;
 		}
 		@Override
 		public String toString() {
@@ -127,21 +117,6 @@ public class Spell extends Item {
 		this.statRequirement.intelligence = Math.max(0, intRequirement);
 		this.statRequirement.faith = Math.max(0, faiRequirement);
 		this.statRequirement.arcane = Math.max(0, arcRequirement);
-	}
-	@Override
-	public void verifyFields() {
-		super.verifyFields();
-		setType(type);
-		setFpCost(fpCost.cast, fpCost.charge);
-		setSlotsUsed(slotsUsed);
-		setStatRequirement(statRequirement.intelligence, statRequirement.faith, statRequirement.arcane);
-	}
-	public void copyFrom(Spell other) {
-		super.copyFrom(other);
-		if (other.type != SpellType.NOT_SET) type = other.type;
-		fpCost.copyFrom(other.fpCost);
-		if (other.slotsUsed > 0) slotsUsed = other.slotsUsed;
-		statRequirement.copyFrom(other.statRequirement);
 	}
 
 	@Override

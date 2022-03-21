@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.revature.exceptions.InsertionFailureException;
 import com.revature.exceptions.ItemNotFoundException;
+import com.revature.models.PartialSpell;
 import com.revature.models.Spell;
+import com.revature.models.Spell.SpellType;
 import com.revature.persistence.SpellDao;
 import com.revature.persistence.SpellPostgres;
 
@@ -28,6 +30,18 @@ public class SpellService {
 		return spells;
 	}
 	
+	public List<Spell> getSpells(SpellType type, int priceCap, Boolean inStock,
+            int intCap, int faiCap, int arcCap) throws ItemNotFoundException
+	{
+		List<Spell> spells = 
+				sd.getSpells(type, priceCap, inStock, intCap, faiCap, arcCap);
+		
+		if (spells == null || spells.isEmpty()) {
+			throw new ItemNotFoundException();
+		}
+		return spells;
+	}
+	
 	public Spell getSpell(int id) throws ItemNotFoundException {
 		Spell spell = sd.getSpell(id);
 		if (spell == null) {
@@ -37,7 +51,6 @@ public class SpellService {
 	}
 	
 	public int addSpell(Spell spell) throws InsertionFailureException {
-		if (spell != null) spell.verifyFields();
 		int id = sd.appendSpell(spell);
 		if (id < 0) {
 			throw new InsertionFailureException();
@@ -51,12 +64,13 @@ public class SpellService {
 		}
 	}
 	
-	public void updateSpell(Spell spellChanges) throws ItemNotFoundException {
-		Spell spell = sd.getSpell(spellChanges.getId());
+	public void updateSpell(PartialSpell spellChanges) throws ItemNotFoundException {
+		Spell spell = null;
+		if (spellChanges != null) spell = sd.getSpell(spellChanges.id);
 		if (spell == null) {
 			throw new ItemNotFoundException();
 		}
-		spell.copyFrom(spellChanges);
+		spellChanges.copyValidFieldsToItem(spell);
 		if (!sd.updateSpell(spell)) {
 			throw new ItemNotFoundException();
 		}

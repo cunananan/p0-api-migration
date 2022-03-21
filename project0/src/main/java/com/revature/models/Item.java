@@ -13,19 +13,19 @@ public class Item {
 	// Constructors
 	public Item() {
 		super();
-		id = -1;
-		name = null;
-		description = null;
-		price = -1;
-		stock = -1;
+		id = 0;
+		name = "";
+		description = "";
+		price = 0;
+		stock = 0;
 	}
 	public Item(String name, String description, int price) {
 		super();
-		id = -1;
+		id = 0;
 		setName(name);
 		setDescription(description);
 		setPrice(price);
-		stock = -1;
+		stock = 0;
 	}
 	public Item(int id, String name, String description, int price, int stock) {
 		this(name, description, price);
@@ -49,7 +49,7 @@ public class Item {
 		return id;
 	}
 	public void setId(int id) {
-		this.id = Math.max(1, id);
+		this.id = Math.max(0, id);
 	}
 	public String getName() {
 		return name;
@@ -74,20 +74,6 @@ public class Item {
 	}
 	public void setStock(int stock) {
 		this.stock = Math.max(0, stock);
-	}
-	public void verifyFields() {
-		setId(id);
-		setName(name);
-		setDescription(description);
-		setPrice(price);
-		setStock(stock);
-	}
-	public void copyFrom(Item other) {
-		if (other.id > 0) id = other.id;
-		if (other.name != null) name = other.name;
-		if (other.description != null) description = other.description;
-		if (other.price > -1) price = other.price;
-		if (other.stock > -1) stock = other.stock;
 	}
 
 	@Override

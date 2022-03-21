@@ -32,6 +32,83 @@ public class SpellPostgres implements SpellDao {
 		}
 		return spells;
 	}
+	
+	@Override
+	public List<Spell> getSpells(SpellType type, int priceCap, Boolean inStock, int intCap, int faiCap, int arcCap)
+	{
+		List<Spell> spells = new ArrayList<>();
+		String sql = "SELECT * FROM spells";
+		
+		boolean whereWasAdded = false;
+		if (type != SpellType.NOT_SET) {
+			if (!whereWasAdded) {
+				sql += " WHERE";
+				whereWasAdded = true;
+			} else {
+				sql += " AND";
+			}
+			sql += " type_id = " + type.ordinal();
+		}
+		if (priceCap >= 0) {
+			if (!whereWasAdded) {
+				sql += " WHERE";
+				whereWasAdded = true;
+			} else {
+				sql += " AND";
+			}
+			sql += " price <= " + priceCap;
+		}
+		if (inStock != null) {
+			if (!whereWasAdded) {
+				sql += " WHERE";
+				whereWasAdded = true;
+			} else {
+				sql += " AND";
+			}
+			sql += (Boolean.TRUE.equals(inStock)) ? " stock > 0" : " stock = 0" ;
+		}
+		if (intCap >= 0) {
+			if (!whereWasAdded) {
+				sql += " WHERE";
+				whereWasAdded = true;
+			} else {
+				sql += " AND";
+			}
+			sql += " int_requirement <= " + intCap;
+		}
+		if (faiCap >= 0) {
+			if (!whereWasAdded) {
+				sql += " WHERE";
+				whereWasAdded = true;
+			} else {
+				sql += " AND";
+			}
+			sql += " fai_requirement <= " + faiCap;
+		}
+		if (arcCap >= 0) {
+			if (!whereWasAdded) {
+				sql += " WHERE";
+				whereWasAdded = true;
+			} else {
+				sql += " AND";
+			}
+			sql += " arc_requirement <= " + arcCap;
+		}
+		sql += " ORDER BY id ASC;";
+		
+		try (Connection c = ConnectionUtil.getConnection()) {
+			PreparedStatement ps = c.prepareStatement(sql);
+			ResultSet rs = ps.executeQuery();
+			
+			while (rs.next()) {
+				spells.add(createSpellFromRecord(rs));
+			}
+		} catch (SQLException | IOException e) {
+			// TODO Proper Handling
+			e.printStackTrace();
+		}
+		return spells;
+	}
 
 	@Override
 	public Spell getSpell(int id) {
