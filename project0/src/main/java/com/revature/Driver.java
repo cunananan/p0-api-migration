@@ -93,7 +93,7 @@ public class Driver {
 			}
 		});
 		
-		app.post("spells/*", (ctx) -> {
+		app.post("spells/", (ctx) -> {
 			Spell spell = ctx.bodyAsClass(Spell.class);
 			try {
 				int id = ss.addSpell(spell);
