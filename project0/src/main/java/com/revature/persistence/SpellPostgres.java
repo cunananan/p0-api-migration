@@ -8,11 +8,16 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.revature.models.Spell;
 import com.revature.models.Spell.SpellType;
 import com.revature.util.ConnectionUtil;
 
 public class SpellPostgres implements SpellDao {
+	
+	private static Logger log = LogManager.getRootLogger();
 	
 	@Override
 	public List<Spell> getSpells() {
@@ -27,8 +32,7 @@ public class SpellPostgres implements SpellDao {
 				spells.add(createSpellFromRecord(rs));
 			}
 		} catch (SQLException | IOException e) {
-			// TODO Proper Handling
-			e.printStackTrace();
+			logExceptionStackTrace(e, 5);
 		}
 		return spells;
 	}
@@ -37,75 +41,79 @@ public class SpellPostgres implements SpellDao {
 	public List<Spell> getSpells(SpellType type, int priceCap, Boolean inStock, int intCap, int faiCap, int arcCap)
 	{
 		List<Spell> spells = new ArrayList<>();
-		String sql = "SELECT * FROM spells";
+		StringBuilder sql = new StringBuilder("SELECT * FROM spells");
 		
 		boolean whereWasAdded = false;
 		if (type != SpellType.NOT_SET) {
 			if (!whereWasAdded) {
-				sql += " WHERE";
+				sql.append(" WHERE");
 				whereWasAdded = true;
 			} else {
-				sql += " AND";
+				sql.append(" AND");
 			}
-			sql += " type_id = " + type.ordinal();
+			sql.append(" type_id = ");
+			sql.append(type.ordinal());
 		}
 		if (priceCap >= 0) {
 			if (!whereWasAdded) {
-				sql += " WHERE";
+				sql.append(" WHERE");
 				whereWasAdded = true;
 			} else {
-				sql += " AND";
+				sql.append(" AND");
 			}
-			sql += " price <= " + priceCap;
+			sql.append(" price <= ");
+			sql.append(priceCap);
 		}
 		if (inStock != null) {
 			if (!whereWasAdded) {
-				sql += " WHERE";
+				sql.append(" WHERE");
 				whereWasAdded = true;
 			} else {
-				sql += " AND";
+				sql.append(" AND");
 			}
-			sql += (Boolean.TRUE.equals(inStock)) ? " stock > 0" : " stock = 0" ;
+			sql.append(Boolean.TRUE.equals(inStock) ? " stock > 0" : " stock = 0");
 		}
 		if (intCap >= 0) {
 			if (!whereWasAdded) {
-				sql += " WHERE";
+				sql.append(" WHERE");
 				whereWasAdded = true;
 			} else {
-				sql += " AND";
+				sql.append(" AND");
 			}
-			sql += " int_requirement <= " + intCap;
+			sql.append(" int_requirement <= ");
+			sql.append(intCap);
 		}
 		if (faiCap >= 0) {
 			if (!whereWasAdded) {
-				sql += " WHERE";
+				sql.append(" WHERE");
 				whereWasAdded = true;
 			} else {
-				sql += " AND";
+				sql.append(" AND");
 			}
-			sql += " fai_requirement <= " + faiCap;
+			sql.append(" fai_requirement <= ");
+			sql.append(faiCap);
 		}
 		if (arcCap >= 0) {
 			if (!whereWasAdded) {
-				sql += " WHERE";
+				sql.append(" WHERE");
 				whereWasAdded = true;
 			} else {
-				sql += " AND";
+				sql.append(" AND");
 			}
-			sql += " arc_requirement <= " + arcCap;
+			sql.append(" arc_requirement <= ");
+			sql.append(arcCap);
 		}
-		sql += " ORDER BY id ASC;";
+		sql.append(" ORDER BY id ASC;");
 		
 		try (Connection c = ConnectionUtil.getConnection()) {
-			PreparedStatement ps = c.prepareStatement(sql);
+			PreparedStatement ps = c.prepareStatement(sql.toString());
 			ResultSet rs = ps.executeQuery();
 			
 			while (rs.next()) {
 				spells.add(createSpellFromRecord(rs));
 			}
 		} catch (SQLException | IOException e) {
-			// TODO Proper Handling
-			e.printStackTrace();
+			logExceptionStackTrace(e, 5);
 		}
 		return spells;
 	}
@@ -124,8 +132,7 @@ public class SpellPostgres implements SpellDao {
 				spell = createSpellFromRecord(rs);
 			}
 		} catch (SQLException | IOException e) {
-			// TODO Proper handling
-			e.printStackTrace();
+			logExceptionStackTrace(e, 5);
 		}
 		return spell;
 	}
@@ -148,8 +155,7 @@ public class SpellPostgres implements SpellDao {
 				id = rs.getInt("id");
 			}
 		} catch (SQLException | IOException e) {
-			// TODO Proper handling
-			e.printStackTrace();
+			logExceptionStackTrace(e, 5);
 		}
 		return id;
 	}
@@ -171,8 +177,7 @@ public class SpellPostgres implements SpellDao {
 				genId = rs.getInt("id");
 			}
 		} catch (SQLException | IOException e) {
-			// TODO Proper handling
-			e.printStackTrace();
+			logExceptionStackTrace(e, 5);
 		}
 		return genId;
 	}
@@ -190,8 +195,7 @@ public class SpellPostgres implements SpellDao {
 				return true;
 			}
 		} catch (SQLException | IOException e) {
-			// TODO Proper handling
-			e.printStackTrace();
+			logExceptionStackTrace(e, 5);
 		}
 		return false;
 	}
@@ -212,8 +216,7 @@ public class SpellPostgres implements SpellDao {
 				return true;
 			}
 		} catch (SQLException | IOException e) {
-			// TODO Proper handling
-			e.printStackTrace();
+			logExceptionStackTrace(e);
 		}
 		return false;
 	}
@@ -248,5 +251,20 @@ public class SpellPostgres implements SpellDao {
 		ps.setInt(startIdx+8, spell.getStatRequirement().intelligence);
 		ps.setInt(startIdx+9, spell.getStatRequirement().faith);
 		ps.setInt(startIdx+10, spell.getStatRequirement().arcane);
+	}
+	
+	private void logExceptionStackTrace(Exception e) {
+		log.error("Exception was thrown while accessing database: ", e.fillInStackTrace());
+	}
+	
+	private void logExceptionStackTrace(Exception e, int numOfElements) {
+		StackTraceElement[] elts = e.getStackTrace();
+		StringBuilder msg = new StringBuilder("Exception was thrown while accessing database: ");
+		for (int i = 0; i < numOfElements && i < elts.length; i++) {
+			msg.append(System.lineSeparator());
+			msg.append("\t");
+			msg.append(elts[i]);
+		}
+		log.error(msg);
 	}
 }
