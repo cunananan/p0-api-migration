@@ -58,22 +58,25 @@ public class SpellService {
 		return id;
 	}
 	
-	public void deleteSpell(int id) throws ItemNotFoundException {
-		if (!sd.deleteSpell(id)) {
+	public Spell deleteSpell(int id) throws ItemNotFoundException {
+		Spell result = sd.deleteSpell(id); 
+		if (result == null) {
 			throw new ItemNotFoundException();
 		}
+		return result;
 	}
 	
-	public void updateSpell(PartialSpell spellChanges) throws ItemNotFoundException {
+	public Spell updateSpell(PartialSpell spellChanges) throws ItemNotFoundException {
 		Spell spell = null;
 		if (spellChanges != null) spell = sd.getSpell(spellChanges.id);
 		if (spell == null) {
 			throw new ItemNotFoundException();
 		}
 		spellChanges.copyValidFieldsToItem(spell);
-		if (!sd.updateSpell(spell)) {
+		if (sd.updateSpell(spell) == null) {
 			throw new ItemNotFoundException();
 		}
+		return spell;
 	}
 }
 

@@ -33,6 +33,7 @@ public class SpellPostgres implements SpellDao {
 			}
 		} catch (SQLException | IOException e) {
 			logExceptionStackTrace(e, 5);
+//			e.printStackTrace();
 		}
 		return spells;
 	}
@@ -114,6 +115,7 @@ public class SpellPostgres implements SpellDao {
 			}
 		} catch (SQLException | IOException e) {
 			logExceptionStackTrace(e, 5);
+//			e.printStackTrace();
 		}
 		return spells;
 	}
@@ -133,6 +135,7 @@ public class SpellPostgres implements SpellDao {
 			}
 		} catch (SQLException | IOException e) {
 			logExceptionStackTrace(e, 5);
+//			e.printStackTrace();
 		}
 		return spell;
 	}
@@ -156,6 +159,7 @@ public class SpellPostgres implements SpellDao {
 			}
 		} catch (SQLException | IOException e) {
 			logExceptionStackTrace(e, 5);
+//			e.printStackTrace();
 		}
 		return id;
 	}
@@ -178,12 +182,14 @@ public class SpellPostgres implements SpellDao {
 			}
 		} catch (SQLException | IOException e) {
 			logExceptionStackTrace(e, 5);
+//			e.printStackTrace();
 		}
 		return genId;
 	}
 
 	@Override
-	public boolean deleteSpell(int id) {
+	public Spell deleteSpell(int id) {
+		Spell spell = null;
 		String sql = "DELETE FROM spells WHERE id = ? RETURNING *;";
 		
 		try (Connection c = ConnectionUtil.getConnection()) {
@@ -192,16 +198,17 @@ public class SpellPostgres implements SpellDao {
 			ResultSet rs = ps.executeQuery();
 			
 			if (rs.next()) {
-				return true;
+				spell = createSpellFromRecord(rs);
 			}
 		} catch (SQLException | IOException e) {
 			logExceptionStackTrace(e, 5);
+//			e.printStackTrace();
 		}
-		return false;
+		return spell;
 	}
 
 	@Override
-	public boolean updateSpell(Spell spell) {
+	public Spell updateSpell(Spell spell) {
 		String sql = "UPDATE spells SET name = ?, description = ?, price = ?, stock = ?, type_id = ?, "
 		             + "cast_fp_cost = ?, charge_fp_cost = ?, slots_used = ?, int_requirement = ?, "
 		             + "fai_requirement = ?, arc_requirement = ? WHERE id = ? RETURNING *;";
@@ -213,12 +220,14 @@ public class SpellPostgres implements SpellDao {
 			ResultSet rs = ps.executeQuery();
 			
 			if (rs.next()) {
-				return true;
+				// No need to construct from record; should be identical to spell passed in
+				return spell;
 			}
 		} catch (SQLException | IOException e) {
 			logExceptionStackTrace(e);
+//			e.printStackTrace();
 		}
-		return false;
+		return null;
 	}
 	
 	private Spell createSpellFromRecord(ResultSet rs) throws SQLException {
