@@ -130,13 +130,13 @@ class TestSpellService {
 	
 	@Test
 	void deleteSpellTest0() {
-		when(mockDao.deleteSpell(1)).thenReturn(true);
+		when(mockDao.deleteSpell(1)).thenReturn(spells.get(0));
 		assertDoesNotThrow(() -> { ss.deleteSpell(1); });
 		verify(mockDao).deleteSpell(1);
 	}
 	@Test
 	void deleteSpellTest1() {
-		when(mockDao.deleteSpell(0)).thenReturn(false);
+		when(mockDao.deleteSpell(0)).thenReturn(null);
 		assertThrows(ItemNotFoundException.class, () -> {
 			ss.deleteSpell(0);
 		});
@@ -146,7 +146,7 @@ class TestSpellService {
 	@Test
 	void updateSpellTest0() {
 		when(mockDao.getSpell(2)).thenReturn(spells.get(1));
-		when(mockDao.updateSpell(spells.get(1))).thenReturn(true);
+		when(mockDao.updateSpell(spells.get(1))).thenReturn(spells.get(1));
 		assertDoesNotThrow(() -> { ss.updateSpell(partial); });
 		verify(mockDao).getSpell(2);
 		verify(mockDao).updateSpell(spells.get(1));

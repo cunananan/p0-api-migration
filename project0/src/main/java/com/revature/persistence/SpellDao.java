@@ -19,8 +19,8 @@ public interface SpellDao {
 	public int insertSpell(Spell spell);
 	// Adds spell to end of collection; returns id of spell if successful, else returns -1
 	public int appendSpell(Spell spell);
-	// Deletes spell of id; returns true iff successful
-	public boolean deleteSpell(int id);
-	// Updates spell given; returns true iff successful
-	public boolean updateSpell(Spell spell);
+	// Deletes spell of id; returns deleted spell if successful, else returns null
+	public Spell deleteSpell(int id);
+	// Updates spell given; returns updated spell if successful, else returns null
+	public Spell updateSpell(Spell spell);
 }
