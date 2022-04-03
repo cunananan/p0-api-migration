@@ -2,9 +2,9 @@
 ### The following just does a (mock) setup for deploying project0 on EC2 ###
 
 # setup environment variables
-export DB_URL=jdbc:postgresql://database-1.c0rrv27h2y4k.us-east-2.rds.amazonaws.com:5432/postgres
+export DB_URL=jdbc:postgresql://database-1.vdQw4w9WgXcQ.us-west-0.rds.amazonaws.com:5432/postgres
 export DB_USER=postgres
-export DB_PASS=upd0g
+export DB_PASS=secret
 
 # install relevant applications
 sudo yum install java

@@ -1,8 +1,8 @@
 package com.revature.controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,7 +48,7 @@ public class SpellController {
 		int arcCap = -1;
 		boolean queriesAllNull = true;
 		
-		if (searchStr != null && !searchStr.isBlank()) {
+		if (searchStr != null && !StringUtils.isBlank(searchStr)) {
 			queriesAllNull = false;
 		}
 		if (typeStr != null) {

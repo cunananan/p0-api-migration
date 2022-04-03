@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +38,7 @@ public class SpellService {
 	public List<SpellDto> getSpellsByQuery(String search, SpellType type, int priceCap, Boolean inStock,
             int intCap, int faiCap, int arcCap) throws ItemNotFoundException
 	{	
-		List<Spell> spells = (search == null || search.isBlank())
+		List<Spell> spells = (search == null || StringUtils.isBlank(search))
 		                         ? sr.findAllByOrderByIdAsc()
 	                             : findBySearchNameAndDescription(search);
 		Stream<Spell> ss = spells.stream();

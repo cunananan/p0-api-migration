@@ -21,6 +21,7 @@ public class Item {
 	private int id;
 	@Column(nullable=false)
 	private String name;
+	@Column(nullable=false)
 	private String description;
 	private int price;
 	private int stock;
