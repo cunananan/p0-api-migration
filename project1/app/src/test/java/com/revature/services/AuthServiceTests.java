@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -43,7 +46,7 @@ public class AuthServiceTests {
 			as.login(null, "1234");
 		});
 		assertThrows(AuthenticationException.class, () -> {
-			as.login("admin", null);
+			as.login("", "1234");
 		});
 	}
 	
@@ -51,7 +54,7 @@ public class AuthServiceTests {
 	void loginTestX1() {
 		
 		assertThrows(AuthenticationException.class, () -> {
-			as.login("", "1234");
+			as.login("admin", null);
 		});
 		assertThrows(AuthenticationException.class, () -> {
 			as.login("admin", "");
@@ -60,17 +63,17 @@ public class AuthServiceTests {
 	
 	@Test
 	void loginTest0() {
-		
+		when(mockRepo.findByUsernameOrEmail("admin", "admin")).thenReturn(Optional.of(admin));
 		assertDoesNotThrow(() -> {
-			assertEquals(adminToken, as.login("admin", "1234"));			
+			assertEquals(adminToken, as.login("admin", "1234"));
 		});
 	}
 	
 	@Test
 	void loginTest1() {
-		
+		when(mockRepo.findByUsernameOrEmail("ex@mple.com", "ex@mple.com")).thenReturn(Optional.of(user));
 		assertDoesNotThrow(() -> {
-			assertEquals(adminToken, as.login("ex@mple.com", "pass"));			
+			assertEquals(userToken, as.login("ex@mple.com", "pass"));
 		});
 	}
 	
@@ -96,19 +99,23 @@ public class AuthServiceTests {
 	}
 	
 	@Test
-	void authorizeRoleTestX() {
+	void authorizeRoleTestX0() {
 		assertThrows(AuthorizationException.class, () -> {
 			as.authorizeRole(null, UserRole.USER);
 		});
 	}
 	
 	@Test
-	void authorizeRoleTest0() {
-		assertThrows(AuthorizationException.class, () -> {
-			as.authorizeRole(userToken);
-		});
+	void authorizeRoleTestX1() {
 		assertThrows(AuthorizationException.class, () -> {
 			as.authorizeRole(userToken, UserRole.STAFF, UserRole.ADMIN);
+		});
+	}
+	
+	@Test
+	void authorizeRoleTest0() {
+		assertDoesNotThrow(() -> {
+			assertEquals(true, as.authorizeRole(userToken));
 		});
 	}
 	
