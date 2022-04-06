@@ -74,7 +74,7 @@ public class SpellDto extends ItemDto {
 	
 	public SpellDto() {
 		super();
-		type = SpellType.NOT_SET;
+		type = null;
 		fpCost = new FpCost();
 		slotsUsed = -1;
 		statRequirement = new StatRequirement();
@@ -105,7 +105,7 @@ public class SpellDto extends ItemDto {
 	public void copyTo(Spell target) {
 		super.copyTo(target);
 		target.setCategory(ItemCategory.SPELL);
-		if (type != SpellType.NOT_SET) target.setType(type);
+		if (type != null) target.setType(type);
 		
 		if (fpCost.cast >= 0) target.setCastFpCost(fpCost.cast);
 		if (fpCost.charge >= 0) target.setChargeFpCost(fpCost.charge);

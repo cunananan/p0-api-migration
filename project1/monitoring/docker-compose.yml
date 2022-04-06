@@ -3,33 +3,43 @@ version: "2.3.3"
 services:
   promtail:
     image: grafana/promtail:latest
-    container_name: spellbook-promtail
+    container_name: promtail-service
     volumes:
       - ./promtail/promtail-docker-config.yml:/etc/promtail/docker-config.yaml
       - ../app/logs/application.log:/var/log/application.log
     command: "--config.file=/etc/promtail/docker-config.yaml"
   loki:
     image: grafana/loki:latest
-    container_name: spellbook-loki
+    container_name: loki-service
     ports:
       - 3100:3100
   grafana:
     image: grafana/grafana:latest
-    container_name: spellbook-grafana
+    container_name: grafana-service
     volumes:
-      - grafana-dara:/var/lib/grafana
+      - grafana-data:/var/lib/grafana
     ports:
       - 3000:3000
     depends_on:
       - loki
   prometheus:
     image: prom/prometheus:latest
+    container_name: prometheus-service
     ports:
       - 9090:9090
     volumes:
-      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/etc/prometheus
       - prometheus-data:/prometheus
-    container_name: logging-prometheus
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager-service
+    volumes:
+      - ./alertmanager:/etc/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+    ports:
+      - 9093:9093
 
 volumes:
   grafana-data:

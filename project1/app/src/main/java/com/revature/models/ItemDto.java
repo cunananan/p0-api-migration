@@ -15,7 +15,7 @@ public class ItemDto {
 	
 	public ItemDto() {
 		super();
-		category = ItemCategory.NOT_SET;
+		category = null;
 		id = -1;
 		name = null;
 		description = null;
@@ -38,7 +38,7 @@ public class ItemDto {
 	}
 	
 	public void copyTo(Item target) {
-		if (category != ItemCategory.NOT_SET) target.setCategory(category); 
+		if (category != null) target.setCategory(category); 
 		if (id >= 0) target.setId(id);
 		if (name != null) target.setName(name);
 		if (description != null) target.setDescription(description);

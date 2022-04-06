@@ -29,11 +29,14 @@ public class Item {
 	public enum ItemCategory {
 		NOT_SET,
 		TOOL,
+		CRAFTING_MATERIAL,
+		UPGRADE_MATERIAL,
+		KEY_ITEM,
 		SPIRIT_ASH,
+		ASH_OF_WAR,
 		WEAPON,
 		AMMUNITION,
-		ASH_OF_WAR,
-		SPELLCASTER,
+		CATALYST,
 		SPELL,
 		ARMOR,
 		TALISMAN,
@@ -65,7 +68,7 @@ public class Item {
 		return category;
 	}
 	public void setCategory(ItemCategory category) {
-		if (category != ItemCategory.NOT_SET) this.category = category;
+		if (category != null && category != ItemCategory.NOT_SET) this.category = category;
 	}
 	public int getId() {
 		return id;

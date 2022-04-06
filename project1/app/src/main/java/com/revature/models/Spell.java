@@ -58,7 +58,7 @@ public class Spell extends Item {
 		return type;
 	}
 	public void setType(SpellType type) {
-		if (type != SpellType.NOT_SET) this.type = type;
+		if (type != null && type != SpellType.NOT_SET) this.type = type;
 	}
 	public int getCastFpCost() {
 		return castFpCost;

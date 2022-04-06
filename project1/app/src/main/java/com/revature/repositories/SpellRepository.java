@@ -16,10 +16,4 @@ public interface SpellRepository extends JpaRepository<Spell, Integer> {
 	List<Spell> findByNameContainingIgnoreCaseOrderByIdAsc(String search);
 	
 	List<Spell> findByDescriptionContainingIgnoreCaseOrderByIdAsc(String search);
-	
-//	@Query(	value = "SELECT * FROM spells WHERE UPPER(name) LIKE UPPER(?1) ORDER BY id ASC"
-//					+ " UNION "
-//					+ "SELECT * FROM spells WHERE UPPER(description LIKE UPPER(?1) ORDER BY id ASC",
-//			nativeQuery = true)
-//	List<Spell> findBySearchNameOrDescription(String search);
 }
