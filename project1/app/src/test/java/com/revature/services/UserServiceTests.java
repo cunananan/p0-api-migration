@@ -143,15 +143,7 @@ public class UserServiceTests {
 	void updateUserPasswordTestX0() {
 		when(mockRepo.findById(0)).thenReturn(Optional.empty());
 		assertThrows(UserNotFoundException.class, () -> {
-			us.updateUserPassword(0, "p4ssw0rd", "cooltimes3");
-		});
-	}
-	
-	@Test
-	void updateUserPasswordTestX1() {
-		when(mockRepo.findById(1)).thenReturn(Optional.of(users.get(0)));
-		assertThrows(ValidationException.class, () -> {
-			us.updateUserPassword(1, "p4ssw0rd", "cooltimes3");
+			us.updateUserPassword(0, "cooltimes3");
 		});
 	}
 	
@@ -159,7 +151,7 @@ public class UserServiceTests {
 	void updateUserPasswordTestX2() {
 		when(mockRepo.findById(1)).thenReturn(Optional.of(users.get(0)));
 		assertThrows(ValidationException.class, () -> {
-			us.updateUserPassword(1, "1234asdf", null);
+			us.updateUserPassword(1, null);
 		});
 	}
 	
@@ -168,7 +160,7 @@ public class UserServiceTests {
 		when(mockRepo.findById(2)).thenReturn(Optional.of(users.get(1)));
 		when(mockRepo.save(users.get(1))).thenReturn(users.get(1));
 		assertDoesNotThrow(() -> {
-			assertEquals(usersDto.get(1), us.updateUserPassword(2, "p4ssw0rd", "cooltimes3"));
+			assertEquals(usersDto.get(1), us.updateUserPassword(2, "cooltimes3"));
 		});
 	}
 	

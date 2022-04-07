@@ -40,7 +40,7 @@ public class UserService {
 	
 	@Transactional
 	public List<UserDto> getUsersByQuery(String search, UserRole role) {
-		List<User> users = (search == null || StringUtils.isBlank(search))
+		List<User> users = (StringUtils.isBlank(search))
 		                       ? ur.findAllByOrderByIdAsc()
 		                       : findBySearchUsernameAndEmail(search);
 		Stream<User> us = users.stream();
@@ -73,21 +73,19 @@ public class UserService {
 		{
 			throw new UserAlreadyExistsException("User with that username or email already exists");
 		}
-		newUser.setId(0);	// Ensure we don't overwrite an existing user
+		newUser.setId(0);
 		return new UserDto(ur.save(newUser));
 	}
 	
 	@Transactional
-	public UserDto updateUserPassword(int userId, String currPassword, String newPassword) {
+	public UserDto updateUserPassword(int userId, String newPassword) {
 		User user = ur.findById(userId).orElseThrow(() ->
                                            new UserNotFoundException("User not found") );
-		// TODO hashPassword
-		if (!user.getPassword().equals(currPassword)) {
-			throw new ValidationException("Current password is incorrect");
-		}
+		
 		if (!ValidationUtil.validatePassword(newPassword)) {
 			throw new ValidationException("New password is invalid");
 		}
+		// TODO hashPassword
 		user.setPassword(newPassword);
 		return new UserDto(ur.save(user));
 	}

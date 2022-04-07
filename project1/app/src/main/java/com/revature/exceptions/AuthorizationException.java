@@ -19,17 +19,17 @@ public class AuthorizationException extends RuntimeException {
 	}
 
 	public AuthorizationException(String message, Throwable cause) {
-		super(message, cause);
+		super(message, cause, false, false);
 		// TODO Auto-generated constructor stub
 	}
 
 	public AuthorizationException(String message) {
-		super(message);
+		super(message, null, false, false);
 		// TODO Auto-generated constructor stub
 	}
 
 	public AuthorizationException(Throwable cause) {
-		super(cause);
+		super(null, cause, false, false);
 		// TODO Auto-generated constructor stub
 	}
 }

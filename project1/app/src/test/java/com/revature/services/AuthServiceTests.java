@@ -86,8 +86,8 @@ public class AuthServiceTests {
 	
 	@Test
 	void authorizeUserTestX1() {
-		assertThrows(AuthorizationException.class, () -> {
-			as.authorizeUser(userToken, -1);
+		assertDoesNotThrow(() -> {
+			assertEquals(false, as.authorizeUser(userToken, -1));			
 		});
 	}
 	
@@ -107,8 +107,8 @@ public class AuthServiceTests {
 	
 	@Test
 	void authorizeRoleTestX1() {
-		assertThrows(AuthorizationException.class, () -> {
-			as.authorizeRole(userToken, UserRole.STAFF, UserRole.ADMIN);
+		assertDoesNotThrow(() -> {
+			assertEquals(false, as.authorizeRole(userToken, UserRole.STAFF, UserRole.ADMIN));
 		});
 	}
 	
@@ -124,6 +124,61 @@ public class AuthServiceTests {
 	void authorizeRoleTest1() {
 		assertDoesNotThrow(() -> {
 			assertEquals(true, as.authorizeRole(adminToken, UserRole.ADMIN));			
+		});
+	}
+	
+	@Test
+	void verifyPasswordTestX() {
+		when(mockRepo.findById(0)).thenReturn(Optional.empty());
+		assertThrows(AuthorizationException.class, () -> {
+			as.verifyPassword("0:ADMIN", "p4ssw0rd");
+		});
+		assertThrows(AuthorizationException.class, () -> {
+			as.verifyPassword(null, null);
+		});
+	}
+	
+	@Test
+	void verifyPasswordTest0() {
+		when(mockRepo.findById(1)).thenReturn(Optional.of(admin));
+		assertDoesNotThrow(() -> {
+			assertEquals(false, as.verifyPassword(adminToken, user.getPassword()));
+		});
+	}
+	
+	@Test
+	void verifyPasswordTest1() {
+		when(mockRepo.findById(1)).thenReturn(Optional.of(admin));
+		assertDoesNotThrow(() -> {
+			assertEquals(true, as.verifyPassword(adminToken, admin.getPassword()));
+		});
+	}
+	
+	@Test
+	void extractIdFromTokenX() {
+		assertThrows(AuthorizationException.class, () -> {
+			as.extractIdFromToken(null);
+		});
+	}
+	
+	@Test
+	void extractIdFromToken0() {
+		assertDoesNotThrow(() -> {
+			assertEquals(1, as.extractIdFromToken(adminToken));			
+		});
+	}
+	
+	@Test
+	void extractRoleFromTokenX() {
+		assertThrows(AuthorizationException.class, () -> {
+			as.extractRoleFromToken(null);
+		});
+	}
+	
+	@Test
+	void extractRoleFromToken0() {
+		assertDoesNotThrow(() -> {
+			assertEquals(UserRole.ADMIN, as.extractRoleFromToken(adminToken));			
 		});
 	}
 }

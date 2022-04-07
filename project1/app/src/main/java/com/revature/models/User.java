@@ -42,7 +42,6 @@ public class User {
 	// Constructors
 	public User() {
 		super();
-		id = -1;
 		username = null;
 		email = null;
 		password = null;
@@ -55,6 +54,14 @@ public class User {
 		this.email = email;
 		this.password = password;
 		this.role = role;
+	}
+	public User(User other) {
+		super();
+		id = other.id;
+		username = other.username;
+		email = other.email;
+		password = other.password;
+		role = other.role;
 	}
 
 	// Setters and Getters

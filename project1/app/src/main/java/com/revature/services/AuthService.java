@@ -22,10 +22,10 @@ public class AuthService {
 	
 	// Returns token as string iff successful
 	public String login(String user, String password) {
-		if (user == null || StringUtils.isBlank(user)) {
+		if (StringUtils.isBlank(user)) {
 			throw new AuthenticationException("Username or email was not provided");
 		}
-		if (password == null || StringUtils.isBlank(password)) {
+		if (StringUtils.isBlank(password)) {
 			throw new AuthenticationException("Password was not provided");
 		}
 		User userObj = ur.findByUsernameOrEmail(user, user)
@@ -36,21 +36,17 @@ public class AuthService {
 		if (!userObj.getPassword().equals(password)) {
 			throw new AuthenticationException("Incorrect password");
 		}
-		
 		return generateToken(userObj);
 	}
 	
 	public boolean authorizeUser(String token, int userId) {
-		if (token == null || StringUtils.isBlank(token)) {
+		if (StringUtils.isBlank(token)) {
 			throw new AuthorizationException("Null token");
 		}
 		if (tokenIsExpired(token)) {
 			throw new AuthorizationException("Expired token");
 		}
-		if (userId != extractIdFromToken(token)) {
-			throw new AuthorizationException("Invalid token");
-		}
-		return true;
+		return userId == extractIdFromToken(token);
 	}
 	
 	public boolean authorizeRole(String token, UserRole... roles) {
@@ -58,7 +54,7 @@ public class AuthService {
 		if (roles.length <= 0) {
 			return true;
 		}
-		if (token == null || StringUtils.isBlank(token)) {
+		if (StringUtils.isBlank(token)) {
 			throw new AuthorizationException("Null token");
 		}
 		if (tokenIsExpired(token)) {
@@ -70,9 +66,41 @@ public class AuthService {
 				return true;
 			}
 		}
-		throw new AuthorizationException("Invalid token");
+		return false;
 	}
 	
+	public boolean verifyPassword(String token, String password) {
+		if (StringUtils.isBlank(token)) {
+			throw new AuthorizationException("Null token");
+		}
+		User user = ur.findById(extractIdFromToken(token))
+					  .orElseThrow(() -> 
+	           	          new AuthorizationException("Could not find user from token") );
+		// TODO hash password here
+		return user.getPassword().equals(password);
+	}
+	
+	public int extractIdFromToken(String token) {
+		// TODO replace this with JWT implementation
+		try {
+			String[] splitToken = token.split(":");
+			
+			return Integer.parseInt(splitToken[0]);
+		} catch (Exception e) {
+			throw new AuthorizationException("Invalid Token", e);
+		}
+	}
+	
+	public UserRole extractRoleFromToken(String token) {		
+		// TODO replace this with JWT implementation
+		try {
+			String[] splitToken = token.split(":");
+			
+			return UserRole.valueOf(splitToken[1]);
+		} catch (Exception e) {
+			throw new AuthorizationException("Invalid token", e);
+		}
+	}
 	
 	private String generateToken(User user) {
 		if (user == null) return null;
@@ -81,26 +109,9 @@ public class AuthService {
 		return user.getId() + ":" + user.getRole().toString();
 	}
 	
-	private int extractIdFromToken(String token) {
-		
-		// TODO replace this with JWT implementation
-		String[] splitToken = token.split(":");
-		
-		return Integer.parseInt(splitToken[0]);
-	}
-	
-	private UserRole extractRoleFromToken(String token) {
-		
-		// TODO replace this with JWT implementation
-		String[] splitToken = token.split(":");
-		
-		return UserRole.valueOf(splitToken[1]);
-	}
-	
 	private boolean tokenIsExpired(String token) {
 		
 		// TODO replace this with JWT implementation
-		
 		return false;
 	}
 }

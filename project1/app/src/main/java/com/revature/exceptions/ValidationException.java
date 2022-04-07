@@ -19,17 +19,17 @@ public class ValidationException  extends RuntimeException {
 	}
 
 	public ValidationException(String message, Throwable cause) {
-		super(message, cause);
+		super(message, cause, false, false);
 		// TODO Auto-generated constructor stub
 	}
 
 	public ValidationException(String message) {
-		super(message);
+		super(message, null, false, false);
 		// TODO Auto-generated constructor stub
 	}
 
 	public ValidationException(Throwable cause) {
-		super(cause);
+		super(null, cause, false, false);
 		// TODO Auto-generated constructor stub
 	}
 }

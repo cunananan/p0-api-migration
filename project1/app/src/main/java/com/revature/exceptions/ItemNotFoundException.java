@@ -19,17 +19,17 @@ public class ItemNotFoundException extends RuntimeException {
 	}
 
 	public ItemNotFoundException(String message, Throwable cause) {
-		super(message, cause);
+		super(message, cause, false, false);
 		// TODO Auto-generated constructor stub
 	}
 
 	public ItemNotFoundException(String message) {
-		super(message);
+		super(message, null, false, false);
 		// TODO Auto-generated constructor stub
 	}
 
 	public ItemNotFoundException(Throwable cause) {
-		super(cause);
+		super(null, cause, false, false);
 		// TODO Auto-generated constructor stub
 	}
 }

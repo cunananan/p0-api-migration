@@ -3,11 +3,7 @@ package com.revature.services;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -20,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.revature.exceptions.ItemNotFoundException;
+import com.revature.exceptions.ValidationException;
 import com.revature.models.Spell;
 import com.revature.models.Spell.SpellType;
 import com.revature.models.SpellDto;
@@ -125,7 +122,7 @@ public class SpellServiceTests {
 
 	@Test
 	void updateSpellTestX0() {
-		assertThrows(ItemNotFoundException.class, () -> {
+		assertThrows(ValidationException.class, () -> {
 			ss.updateSpell(null);
 		});
 	}

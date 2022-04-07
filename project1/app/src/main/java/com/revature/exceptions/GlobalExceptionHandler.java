@@ -26,15 +26,27 @@ public class GlobalExceptionHandler {
 		// TODO log or something
 	}
 	
-	@ResponseStatus(value=HttpStatus.UNAUTHORIZED, reason="Cannot authenticate user")
+	@ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Bad arguments were provided")
+	@ExceptionHandler(ValidationException.class)
+	public void handleValidationException() {
+		// TODO log or something
+	}
+	
+	@ResponseStatus(value=HttpStatus.UNAUTHORIZED, reason="Could not authenticate user")
 	@ExceptionHandler(AuthenticationException.class)
 	public void handleAuthenticationException() {
 		// TODO log or something
 	}
 	
-	@ResponseStatus(value=HttpStatus.FORBIDDEN, reason="User access is not authorized")
+	@ResponseStatus(value=HttpStatus.UNAUTHORIZED, reason="Could not authorize user")
 	@ExceptionHandler(AuthorizationException.class)
 	public void handleAuthorizationException() {
+		// TODO log or something
+	}
+	
+	@ResponseStatus(value=HttpStatus.FORBIDDEN, reason="User access is not allowed")
+	@ExceptionHandler(AccessDeniedException.class)
+	public void handleAccessDeniedException() {
 		// TODO log or something
 	}
 }

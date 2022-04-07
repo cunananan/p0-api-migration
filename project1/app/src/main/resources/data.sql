@@ -1,3 +1,16 @@
+INSERT INTO users (username, email, password, role)
+VALUES	('radagon', 'radagon@goldenorder.gov', 'praise2fingers', 'ADMIN'),
+		('mArgIt', 'king_morgott@mail.leyndell.org', 'foo1ish-ambition', 'STAFF'),
+		('m00n_queen', 'rennala.caria@raya-lucaria.edu', 'r4d4g0nSUX', 'STAFF'),
+		('goldenboi96', 'godrickRULZ1996@storm-mail.org', 'i_got_99_arms', 'STAFF'),
+		('teh_all_knowing', 'gideon_o@erdmail.com', 'TRUE_3LD3N_L0RD', 'USER'),
+		('daughterOfTheCosmos', 'sellen@raya-lucaria.edu', 'arcaneDame456', 'USER'),
+		('xX_alexander_Xx', 'iron_fist_alex@erdmail.com', '1234qwer', 'USER'),
+		('malenia-blade-of-miquella', 'malenia-blade-of-miquella@haligmail.org', '1337W-0L', 'USER'),
+		('trustypatches', 'kenneth.haight@erdmail.com', 'O0O0OOO0', 'USER');
+
+
+
 INSERT INTO spells (category, name, description, price, stock, type, cast_fp_cost, charge_fp_cost, slots_used, int_requirement, fai_requirement, arc_requirement)
 VALUES	('SPELL', 'Crystal Burst', 'Fires a burst of glintstone crystal shards', 1000, 8, 'SORCERY', 14, 0, 1, 23, 0, 0),
 		('SPELL', 'Rock Sling', 'Summons rocks from the earth and sends them flying', 500, 10, 'SORCERY', 18, 12, 1, 18, 0, 0),

@@ -10,9 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.revature.exceptions.ItemNotFoundException;
+import com.revature.exceptions.ValidationException;
 import com.revature.models.Spell;
-import com.revature.models.SpellDto;
 import com.revature.models.Spell.SpellType;
+import com.revature.models.SpellDto;
 import com.revature.repositories.SpellRepository;
 
 @Service
@@ -25,10 +26,10 @@ public class SpellService {
 		this.sr = sr;
 	}
 	
-	public List<SpellDto> getSpells() throws ItemNotFoundException {
+	public List<SpellDto> getSpells() {
 		List<Spell> spells = sr.findAllByOrderByIdAsc();
 		if (spells.isEmpty()) {
-			throw new ItemNotFoundException();
+			throw new ItemNotFoundException("No spells were found");
 		}
 		// Convert List<Spell> to List<SpellDto>
 		return spells.stream().map(SpellDto::new).collect(Collectors.toList());
@@ -36,9 +37,9 @@ public class SpellService {
 	
 	@Transactional
 	public List<SpellDto> getSpellsByQuery(String search, SpellType type, int priceCap, Boolean inStock,
-            int intCap, int faiCap, int arcCap) throws ItemNotFoundException
+            int intCap, int faiCap, int arcCap)
 	{	
-		List<Spell> spells = (search == null || StringUtils.isBlank(search))
+		List<Spell> spells = (StringUtils.isBlank(search))
 		                         ? sr.findAllByOrderByIdAsc()
 	                             : findBySearchNameAndDescription(search);
 		Stream<Spell> ss = spells.stream();
@@ -58,14 +59,15 @@ public class SpellService {
 		
 		List<SpellDto> spellsDto = ss.map(SpellDto::new).collect(Collectors.toList());
 		if (spellsDto.isEmpty()) {
-			throw new ItemNotFoundException();
+			throw new ItemNotFoundException("No spells were found");
 		}
 		// Convert List<Spell> to List<SpellDto>
 		return spellsDto;
 	}
 	
-	public SpellDto getSpellById(int id) throws ItemNotFoundException {
-		Spell spell = sr.findById(id).orElseThrow(ItemNotFoundException::new);
+	public SpellDto getSpellById(int id) {
+		Spell spell = sr.findById(id).orElseThrow(() -> 
+		                                 new ItemNotFoundException("Spell not found") );
 		return new SpellDto(spell);
 	}
 	
@@ -79,11 +81,12 @@ public class SpellService {
 	}
 	
 	@Transactional
-	public SpellDto updateSpell(SpellDto spellUpdates) throws ItemNotFoundException {
+	public SpellDto updateSpell(SpellDto spellUpdates) {
 		if (spellUpdates == null) {
-			throw new ItemNotFoundException();
+			throw new ValidationException("No updates were provided");
 		} else {
-			Spell spell = sr.findById(spellUpdates.id).orElseThrow(ItemNotFoundException::new);
+			Spell spell = sr.findById(spellUpdates.id).orElseThrow(() -> 
+			                                              new ItemNotFoundException("Spell not found") );
 			spellUpdates.copyTo(spell);
 			spellUpdates.copyFrom(sr.save(spell));
 		}
@@ -91,8 +94,9 @@ public class SpellService {
 	}
 	
 	@Transactional
-	public SpellDto deleteSpell(int id) throws ItemNotFoundException {
-		Spell removedSpell = sr.findById(id).orElseThrow(ItemNotFoundException::new);
+	public SpellDto deleteSpell(int id) {
+		Spell removedSpell = sr.findById(id).orElseThrow(() -> 
+		                                        new ItemNotFoundException("Spell not found") );
 		sr.deleteById(id);
 		return new SpellDto(removedSpell);
 	}
