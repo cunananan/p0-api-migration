@@ -33,8 +33,8 @@ public class AuthServiceTests {
 	public static void setup() {
 		mockRepo = mock(UserRepository.class);
 		as = new AuthService(mockRepo);
-		admin = new User(1, "admin", "mail@inter.net", "1234", UserRole.ADMIN);
-		user = new User(2, "user", "ex@mple.com", "pass", UserRole.USER);
+		admin = new User(1, "admin", "mail@inter.net", "1234asdf", UserRole.ADMIN);
+		user = new User(2, "user", "ex@mple.com", "p4ssw0rd", UserRole.USER);
 		
 		adminToken = "1:ADMIN";
 		userToken = "2:USER";
@@ -43,10 +43,10 @@ public class AuthServiceTests {
 	@Test
 	void loginTestX0() {
 		assertThrows(AuthenticationException.class, () -> {
-			as.login(null, "1234");
+			as.login(null, "1234asdf");
 		});
 		assertThrows(AuthenticationException.class, () -> {
-			as.login("", "1234");
+			as.login("", "1234asdf");
 		});
 	}
 	
@@ -65,7 +65,7 @@ public class AuthServiceTests {
 	void loginTest0() {
 		when(mockRepo.findByUsernameOrEmail("admin", "admin")).thenReturn(Optional.of(admin));
 		assertDoesNotThrow(() -> {
-			assertEquals(adminToken, as.login("admin", "1234"));
+			assertEquals(adminToken, as.login("admin", "1234asdf"));
 		});
 	}
 	
@@ -73,7 +73,7 @@ public class AuthServiceTests {
 	void loginTest1() {
 		when(mockRepo.findByUsernameOrEmail("ex@mple.com", "ex@mple.com")).thenReturn(Optional.of(user));
 		assertDoesNotThrow(() -> {
-			assertEquals(userToken, as.login("ex@mple.com", "pass"));
+			assertEquals(userToken, as.login("ex@mple.com", "p4ssw0rd"));
 		});
 	}
 	
@@ -116,6 +116,7 @@ public class AuthServiceTests {
 	void authorizeRoleTest0() {
 		assertDoesNotThrow(() -> {
 			assertEquals(true, as.authorizeRole(userToken));
+			assertEquals(true, as.authorizeRole(userToken, UserRole.NOT_SET));
 		});
 	}
 	

@@ -71,7 +71,7 @@ public class SpellService {
 	
 	public SpellDto addSpell(SpellDto newSpell) {
 		if (newSpell == null) newSpell = new SpellDto();
-		newSpell.id = -1;
+		newSpell.id = -1;	// Ensure we don't overwrite an existing item
 		Spell spell = new Spell();
 		newSpell.copyTo(spell);
 		newSpell.copyFrom(sr.save(spell));

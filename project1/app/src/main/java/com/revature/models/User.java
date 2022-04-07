@@ -88,14 +88,14 @@ public class User {
 	public void setRole(UserRole role) {
 		if (role != null && role != UserRole.NOT_SET) this.role = role;
 	}
-	
-	public void copyTo(User target) {
-		if (id >= 0) target.setId(id);
-		if (validateUsername(username)) target.setUsername(username);
-		if (validateEmail(email)) target.setEmail(email);
-		if (validatePassword(password)) target.setPassword(password);
-		if (role != null) target.setRole(role);
-	}
+//	
+//	public void copyTo(User target) {
+//		if (id >= 0) target.setId(id);
+//		if (validateUsername(username)) target.setUsername(username);
+//		if (validateEmail(email)) target.setEmail(email);
+//		if (validatePassword(password)) target.setPassword(password);
+//		if (role != null) target.setRole(role);
+//	}
 	
 	public boolean validate() {
 		id = Math.max(0, id);

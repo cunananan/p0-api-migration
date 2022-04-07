@@ -66,7 +66,7 @@ public class AuthService {
 		}
 		UserRole role = extractRoleFromToken(token);
 		for (UserRole r : roles) {
-			if (role == r) {
+			if (role == r || r == UserRole.NOT_SET) {
 				return true;
 			}
 		}
