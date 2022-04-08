@@ -2,8 +2,12 @@ package com.revature.controllers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jboss.logging.MDC;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,6 +37,8 @@ public class UserController {
 	private UserService us;
 	private AuthService as;
 	
+	private static final Logger LOG = LoggerFactory.getLogger(UserController.class);
+	
 	@Autowired
 	public UserController(UserService us, AuthService as) {
 		super();
@@ -45,14 +51,16 @@ public class UserController {
 			                                      @RequestParam(name="search", required=false) String searchStr,
 	                                              @RequestParam(name="role", required=false) String roleStr)
 	{
+		MDC.put("requestId", UUID.randomUUID().toString());
+		
 		List<UserDto> users;
 		// If user is not an admin, only show self
 		if (!as.authorizeRole(token, UserRole.ADMIN)) {
 			users = new ArrayList<>();
 			users.add(us.getUserById(as.extractIdFromToken(token)));
+			LOG.info(users.toString() + " was returned");
 			return new ResponseEntity<>(users, HttpStatus.OK);
 		}
-		
 		UserRole role = null;
 		boolean queriesAllNull = true;
 		
@@ -65,6 +73,7 @@ public class UserController {
 		}
 		// May throw runtime exceptions; handled by GlobalExceptionHandler
 		users = (queriesAllNull) ? us.getUsers() : us.getUsersByQuery(searchStr, role);
+		LOG.info(users.size() + " users were returned");
 		return new ResponseEntity<>(users, HttpStatus.OK);
 	}
 	
@@ -72,23 +81,29 @@ public class UserController {
 	public ResponseEntity<UserDto> getUserById(@RequestHeader(name="Authorization", required=false) String token,
 	                                           @PathVariable("id") int id)
 	{
+		MDC.put("requestId", UUID.randomUUID().toString());
 		// Only admins and the id's user can view this
 		if (!as.authorizeRole(token, UserRole.ADMIN) && !as.authorizeUser(token, id)) {
-			// TODO Log
+			LOG.warn("Failed to view User #" + id);
 			throw new AccessDeniedException("Not authorized to view user");
 		}
-		return new ResponseEntity<>(us.getUserById(id), HttpStatus.OK);
+		UserDto user = us.getUserById(id);
+		LOG.info(user.toString() + " was returned");
+		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
 	@PostMapping
 	public ResponseEntity<String> createUser(@RequestHeader(name="Authorization", required=false) String token,
 	                                         @RequestBody User newUser)
 	{
+		MDC.put("requestId", UUID.randomUUID().toString());
 		// If user is not an admin, can only add a user with the USER role
 		if (StringUtils.isBlank(token) || !as.authorizeRole(token, UserRole.ADMIN)) {
+			LOG.debug("New user being created by non-admin; role reduced to USER from " + newUser.getRole());
 			newUser.setRole(UserRole.USER);
 		}
 		UserDto user = us.addUser(newUser);
+		LOG.info(user.toString() + " was created");
 		return new ResponseEntity<>("New user \"" + user.username + "\" was added at index " + user.id, HttpStatus.CREATED);
 	}
 	
@@ -100,9 +115,10 @@ public class UserController {
 	                                         @RequestParam(name="newPassword", required=false) String newPass,
 	                                         @RequestParam(name="newRole", required=false) String newRole)
 	{
+		MDC.put("requestId", UUID.randomUUID().toString());
 		// Only admins and the id's user can view this
 		if (!as.authorizeRole(token, UserRole.ADMIN) && !as.authorizeUser(token, id)) {
-			// TODO Log
+			LOG.warn("Failed to modify User #" + id);
 			throw new AccessDeniedException("Not authorized to modify user");
 		}
 		// Admin can change user role and password without confirmation
@@ -130,6 +146,7 @@ public class UserController {
 			message += (numUpdates == 0) ? "No fields " : "";
 			message += (numUpdates == 1) ? "was updated" : "were updated";
 			message += (newPassInvalid) ? "; new password was invalid" : "";
+			LOG.info(message + " for User #" + id);
 			return new ResponseEntity<>(message, (numUpdates > 0) ? HttpStatus.CREATED : HttpStatus.BAD_REQUEST);
 		}
 		// User can change own password, but must provide current password first
@@ -150,6 +167,7 @@ public class UserController {
 				return new ResponseEntity<>("New password is invalid", HttpStatus.BAD_REQUEST);
 			}
 			us.updateUserPassword(id, newPass);
+			LOG.info("Password was updated for User #" + id);
 			return new ResponseEntity<>("Password was updated", HttpStatus.CREATED);
 		}
 		return new ResponseEntity<>("No fields were updated", HttpStatus.BAD_REQUEST);
@@ -159,11 +177,14 @@ public class UserController {
 	public ResponseEntity<String> deleteUser(@RequestHeader(name="Authorization", required=false) String token,
 	                                         @PathVariable("id") int id)
 	{
+		MDC.put("requestId", UUID.randomUUID().toString());
 		
 		if (!as.authorizeRole(token, UserRole.ADMIN)) {
+			LOG.warn("Failed to delete User #" + id);
 			throw new AccessDeniedException("Not authorized to delete users");
 		}
 		UserDto user = us.deleteUser(id);
+		LOG.info(user.toString() + " was deleted");
 		return new ResponseEntity<>("Deleted user \"" + user.username + "\"", HttpStatus.OK);
 	}
 	
@@ -172,7 +193,8 @@ public class UserController {
 		try {
 			return UserRole.valueOf(roleStr.toUpperCase());
 		} catch (IllegalArgumentException e) {
-			// TODO Logging
+			LOG.debug("UserController.userRoleFromString() is catching exception: " + e.getMessage());
+			LOG.warn("User is passing bad argument through \"role\" param: " + roleStr);
 			return UserRole.NOT_SET;
 		}
 	}

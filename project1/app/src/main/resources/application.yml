@@ -2,10 +2,10 @@ spring:
   profiles:
     active:
     - "@profileActive@"
-  jpa:
-    properties:
-      hibernate:
-        generate_statistics: true
+#  jpa:
+#    properties:
+#      hibernate:
+#        generate_statistics: true
     
 management:
   endpoints:

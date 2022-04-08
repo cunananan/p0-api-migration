@@ -14,7 +14,7 @@ scrape_configs:
       - targets:
           - localhost
         labels:
-          job: spellbook
+          job: logging-demo
           __path__: /var/log/application.log
     pipeline_stages:
       - json:
@@ -22,10 +22,3 @@ scrape_configs:
             level: level
       - labels:
           level:
-  - job_name: docker
-    static_configs:
-      - labels:
-          job: docker
-          __path__: /var/lib/docker/containers/*/*-json.log
-    pipeline_stages:
-      - docker: {}

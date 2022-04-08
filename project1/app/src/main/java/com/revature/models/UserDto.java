@@ -38,6 +38,10 @@ public class UserDto {
 		if (ValidationUtil.validateEmail(email)) target.setEmail(email);
 		if (role != null && role != UserRole.NOT_SET) target.setRole(role);
 	}
+	@Override
+	public String toString() {
+		return "UserDto [id=" + id + ", username=" + username + ", email=" + email + ", role=" + role + "]";
+	}
 
 	@Override
 	public int hashCode() {

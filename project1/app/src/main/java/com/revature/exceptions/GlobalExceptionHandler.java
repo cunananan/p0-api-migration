@@ -1,52 +1,65 @@
 package com.revature.exceptions;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.revature.controllers.UserController;
+
 @ControllerAdvice
 public class GlobalExceptionHandler {
 	
-	@ResponseStatus(value=HttpStatus.NOT_FOUND, reason="No items were found")
+	private static final Logger LOG = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+	
+	@ResponseStatus(code=HttpStatus.NOT_FOUND, reason="No items were found")
 	@ExceptionHandler(ItemNotFoundException.class)
 	public void handleItemNotFoundException() {
-		// TODO log or something
+//		LOG.debug("ItemNotFoundException was thrown and handled");
+		LOG.info("An item query returned no results");
 	}
 	
-	@ResponseStatus(value=HttpStatus.NOT_FOUND, reason="No users were found")
+	@ResponseStatus(code=HttpStatus.NOT_FOUND, reason="No users were found")
 	@ExceptionHandler(UserNotFoundException.class)
 	public void handleUserNotFoundException() {
-		// TODO log or something
+//		LOG.debug("UserNotFoundException was thrown and handled");
+		LOG.info("A user query returned no results");
 	}
 	
-	@ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="User with that username or email already exists")
+	@ResponseStatus(code=HttpStatus.BAD_REQUEST, reason="User with that username or email already exists")
 	@ExceptionHandler(UserAlreadyExistsException.class)
 	public void handleUserAlreadyExistsException() {
-		// TODO log or something
+//		LOG.debug("UserAlreadyExistsException was thrown and handled");
+		LOG.warn("An attempt to create a user that already exists was made");
 	}
 	
-	@ResponseStatus(value=HttpStatus.BAD_REQUEST, reason="Bad arguments were provided")
+	@ResponseStatus(code=HttpStatus.BAD_REQUEST, reason="Bad arguments were provided")
 	@ExceptionHandler(ValidationException.class)
 	public void handleValidationException() {
-		// TODO log or something
+//		LOG.debug("ValidationException was thrown and handled");
+		LOG.warn("Invalid arguments were passed");
 	}
 	
-	@ResponseStatus(value=HttpStatus.UNAUTHORIZED, reason="Could not authenticate user")
+	@ResponseStatus(code=HttpStatus.UNAUTHORIZED, reason="Could not authenticate user")
 	@ExceptionHandler(AuthenticationException.class)
 	public void handleAuthenticationException() {
-		// TODO log or something
+//		LOG.debug("AuthenticationException was thrown and handled");
+		LOG.warn("User authentication failed");
 	}
 	
-	@ResponseStatus(value=HttpStatus.UNAUTHORIZED, reason="Could not authorize user")
+	@ResponseStatus(code=HttpStatus.UNAUTHORIZED, reason="Could not authorize user")
 	@ExceptionHandler(AuthorizationException.class)
 	public void handleAuthorizationException() {
-		// TODO log or something
+//		LOG.debug("AuthorizationException was thrown and handled");
+		LOG.warn("User authorization failed");
 	}
 	
-	@ResponseStatus(value=HttpStatus.FORBIDDEN, reason="User access is not allowed")
+	@ResponseStatus(code=HttpStatus.FORBIDDEN, reason="User access is not allowed")
 	@ExceptionHandler(AccessDeniedException.class)
 	public void handleAccessDeniedException() {
-		// TODO log or something
+//		LOG.debug("AccessDeniedException was thrown and handled");
+		LOG.warn("User tried accessing a forbidden method/endpoint");
 	}
 }
