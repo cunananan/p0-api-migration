@@ -40,7 +40,7 @@ public class AuthController {
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", token);
 		
-		LOG.info("User \"" + username + "\" logged in successfully");
+		LOG.info("User `" + username + "` logged in successfully");
 		return new ResponseEntity<>("Login successful.", headers, HttpStatus.OK);
 	}
 }

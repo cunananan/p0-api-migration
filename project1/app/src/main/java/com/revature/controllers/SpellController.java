@@ -45,7 +45,8 @@ public class SpellController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<List<SpellDto>> getSpells(@RequestParam(name="search", required=false) String searchStr,
+	public ResponseEntity<List<SpellDto>> getSpells(@RequestHeader(name="Authorization", required=false) String token,
+	                                                @RequestParam(name="search", required=false) String searchStr,
 	                                                @RequestParam(name="type", required=false) String typeStr,
 	                                                @RequestParam(name="priceCap", required=false) String priceCapStr,
 	                                                @RequestParam(name="inStock", required=false) String inStockStr,
@@ -53,6 +54,7 @@ public class SpellController {
 	                                                @RequestParam(name="faiCap", required=false) String faiCapStr,
 	                                                @RequestParam(name="arcCap", required=false) String arcCapStr)
 	{
+		MDC.put("user", as.extractUsernameFromToken(token));
 		MDC.put("requestId", UUID.randomUUID().toString());
 		
 		SpellType type = null;
@@ -99,7 +101,10 @@ public class SpellController {
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<SpellDto> getSpellById(@PathVariable("id") int id) {
+	public ResponseEntity<SpellDto> getSpellById(@RequestHeader(name="Authorization", required=false) String token,
+	                                             @PathVariable("id") int id)
+	{
+		MDC.put("user", as.extractUsernameFromToken(token));
 		MDC.put("requestId", UUID.randomUUID().toString());
 		
 		SpellDto spell = ss.getSpellById(id);
@@ -111,6 +116,7 @@ public class SpellController {
 	public ResponseEntity<String> addSpell(@RequestHeader(name="Authorization", required=false) String token,
 	                                       @RequestBody SpellDto newSpell)
 	{
+		MDC.put("user", as.extractUsernameFromToken(token));
 		MDC.put("requestId", UUID.randomUUID().toString());
 		
 		if (!as.authorizeRole(token, UserRole.STAFF, UserRole.ADMIN)) {
@@ -125,6 +131,7 @@ public class SpellController {
 	public ResponseEntity<SpellDto> updateSpell(@RequestHeader(name="Authorization", required=false) String token,
 	                                            @PathVariable("id") int id, @RequestBody SpellDto updates)
 	{
+		MDC.put("user", as.extractUsernameFromToken(token));
 		MDC.put("requestId", UUID.randomUUID().toString());
 		
 		if (!as.authorizeRole(token, UserRole.STAFF, UserRole.ADMIN)) {
@@ -140,6 +147,7 @@ public class SpellController {
 	public ResponseEntity<String> deleteSpell(@RequestHeader(name="Authorization", required=false) String token,
 	                                          @PathVariable("id") int id)
 	{
+		MDC.put("user", as.extractUsernameFromToken(token));
 		MDC.put("requestId", UUID.randomUUID().toString());
 		
 		if (!as.authorizeRole(token, UserRole.STAFF, UserRole.ADMIN)) {
@@ -155,7 +163,7 @@ public class SpellController {
 			return Integer.parseInt(intStr);
 		} catch (NumberFormatException e) {
 			LOG.debug("SpellController.intFromString() is catching exception: " + e.getMessage());
-			LOG.warn("User is passing bad argument through \"___Cap\" param: " + intStr);
+			LOG.warn("User is passing bad argument through `___Cap` param: " + intStr);
 			return -1;
 		}
 	}
@@ -166,7 +174,7 @@ public class SpellController {
 		} else if (boolStr.equalsIgnoreCase("false")) {
 			return Boolean.FALSE;
 		} else {
-			LOG.warn("User is passing bad argument through \"inStock\" param: " + boolStr);
+			LOG.warn("User is passing bad argument through `inStock` param: " + boolStr);
 			return null;
 		}
 	}
@@ -176,7 +184,7 @@ public class SpellController {
 			return SpellType.valueOf(typeStr.toUpperCase());
 		} catch (IllegalArgumentException e) {
 			LOG.debug("SpellController.spellTypeFromString() is catching exception: " + e.getMessage());
-			LOG.warn("User is passing bad argument through \"type\" param: " + typeStr);
+			LOG.warn("User is passing bad argument through `type` param: " + typeStr);
 			return SpellType.NOT_SET;
 		}
 	}

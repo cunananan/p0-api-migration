@@ -51,6 +51,7 @@ public class UserController {
 			                                      @RequestParam(name="search", required=false) String searchStr,
 	                                              @RequestParam(name="role", required=false) String roleStr)
 	{
+		MDC.put("user", as.extractUsernameFromToken(token));
 		MDC.put("requestId", UUID.randomUUID().toString());
 		
 		List<UserDto> users;
@@ -81,6 +82,7 @@ public class UserController {
 	public ResponseEntity<UserDto> getUserById(@RequestHeader(name="Authorization", required=false) String token,
 	                                           @PathVariable("id") int id)
 	{
+		MDC.put("user", as.extractUsernameFromToken(token));
 		MDC.put("requestId", UUID.randomUUID().toString());
 		// Only admins and the id's user can view this
 		if (!as.authorizeRole(token, UserRole.ADMIN) && !as.authorizeUser(token, id)) {
@@ -96,6 +98,7 @@ public class UserController {
 	public ResponseEntity<String> createUser(@RequestHeader(name="Authorization", required=false) String token,
 	                                         @RequestBody User newUser)
 	{
+		MDC.put("user", as.extractUsernameFromToken(token));
 		MDC.put("requestId", UUID.randomUUID().toString());
 		// If user is not an admin, can only add a user with the USER role
 		if (StringUtils.isBlank(token) || !as.authorizeRole(token, UserRole.ADMIN)) {
@@ -115,6 +118,7 @@ public class UserController {
 	                                         @RequestParam(name="newPassword", required=false) String newPass,
 	                                         @RequestParam(name="newRole", required=false) String newRole)
 	{
+		MDC.put("user", as.extractUsernameFromToken(token));
 		MDC.put("requestId", UUID.randomUUID().toString());
 		// Only admins and the id's user can view this
 		if (!as.authorizeRole(token, UserRole.ADMIN) && !as.authorizeUser(token, id)) {
@@ -177,6 +181,7 @@ public class UserController {
 	public ResponseEntity<String> deleteUser(@RequestHeader(name="Authorization", required=false) String token,
 	                                         @PathVariable("id") int id)
 	{
+		MDC.put("user", as.extractUsernameFromToken(token));
 		MDC.put("requestId", UUID.randomUUID().toString());
 		
 		if (!as.authorizeRole(token, UserRole.ADMIN)) {
