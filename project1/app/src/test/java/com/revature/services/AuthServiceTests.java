@@ -28,6 +28,7 @@ public class AuthServiceTests {
 	private static User user;
 	private static String adminToken;
 	private static String userToken;
+	private static String badToken;
 	
 	@BeforeAll
 	public static void setup() {
@@ -36,8 +37,9 @@ public class AuthServiceTests {
 		admin = new User(1, "admin", "mail@inter.net", "1234asdf", UserRole.ADMIN);
 		user = new User(2, "user", "ex@mple.com", "p4ssw0rd", UserRole.USER);
 		
-		adminToken = "1:ADMIN";
-		userToken = "2:USER";
+		adminToken = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiYWRtaW4iLCJyb2xlIjoiQURNSU4ifQ.iabSqnl9-ZDnyT-xzZzUGhspmWlIWcoCJ-4vxeH0c10";
+		userToken = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Miwic3ViIjoidXNlciIsInJvbGUiOiJVU0VSIn0.5O3_NkZVZF84DWHPE0m4yf5Y80iqIp4w2AmL504rQ_s";
+		badToken = "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwic3ViIjoiYWRtaW4iLCJyb2xlIjoiQURNSU4ifQ.iabSqnl9-ZDnyT-xzZzUGhspmWlIWcoCJ";
 	}
 	
 	@Test
@@ -159,6 +161,9 @@ public class AuthServiceTests {
 		assertThrows(AuthorizationException.class, () -> {
 			as.extractIdFromToken(null);
 		});
+		assertThrows(AuthorizationException.class, () -> {
+			as.extractIdFromToken(badToken);
+		});
 	}
 	
 	@Test
@@ -169,9 +174,27 @@ public class AuthServiceTests {
 	}
 	
 	@Test
+	void extractUsernameFromToken0() {
+		assertDoesNotThrow(() -> {
+			assertEquals("[Unknown]", as.extractUsernameFromToken(null));
+			assertEquals("[Unknown]", as.extractUsernameFromToken(badToken));
+		});
+	}
+	
+	@Test
+	void extractUsernameFromToken1() {
+		assertDoesNotThrow(() -> {
+			assertEquals("admin", as.extractUsernameFromToken(adminToken));			
+		});
+	}
+	
+	@Test
 	void extractRoleFromTokenX() {
 		assertThrows(AuthorizationException.class, () -> {
 			as.extractRoleFromToken(null);
+		});
+		assertThrows(AuthorizationException.class, () -> {
+			as.extractRoleFromToken(badToken);
 		});
 	}
 	
