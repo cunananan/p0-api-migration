@@ -1,6 +1,8 @@
 ##### User Defined #####
 
 creds.properties
+project1/app/docker-compose.yml
+project1/monitoring/alertmanager/alertmanager.yml
 
 # Created by https://www.toptal.com/developers/gitignore/api/eclipse,java,maven
 # Edit at https://www.toptal.com/developers/gitignore?templates=eclipse,java,maven

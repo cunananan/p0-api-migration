@@ -59,4 +59,4 @@
     - It also provides database management services such as automatic backups, failure detection and recovery, and methods for controlling user permissions
 
 * Which vendors are supported?
-    - Amaxon RDS supports Amazon Aurora, PostgreSQL, MySQL, MariaSQLm Oracle Database, and SQL Server
+    - Amaxon RDS supports Amazon Aurora, PostgreSQL, MySQL, MariaSQL, Oracle Database, and SQL Server
