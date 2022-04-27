@@ -1,0 +1,35 @@
+version: "2.3.3"
+
+services:
+  spellbook:
+    # Change this to image: [imgname] after pushing to DockerHub
+    build: .
+    image: spellbook
+    ports:
+      - 8081:8080
+    environment:
+      - DB_URL=jdbc:postgresql://spellbook-pg:5432/spellbook-db
+      - DB_USER=postgres
+      - DB_PASS=_t4rni5hed_
+      # - SECRET=$SECRET
+    container_name: spellbook-app
+    depends_on:
+      - spellbook-pg
+    volumes:
+      - ./logs/application.log:/logs/application.log
+      # IF THE FILE DOES NOT ALREADY EXIST, A FOLDER OF THAT NAME MIGHT BE CREATED
+  spellbook-pg:
+    image: postgres
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_DB=spellbook-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=_t4rni5hed_
+    container_name: spellbook-db
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:
+    driver: local
